@@ -8,6 +8,8 @@ import com.spiritlight.chess.utils.Side;
 
 import java.util.Scanner;
 
+// fix: Knight movement issues
+// fix: Pawn capturing
 public class Main implements GameFinishEvent.Listener {
     public static void main(String[] args) {
         try {

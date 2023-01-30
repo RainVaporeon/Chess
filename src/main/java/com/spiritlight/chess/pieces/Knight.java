@@ -18,7 +18,7 @@ public class Knight extends AbstractPiece {
         Vector move = Vector.of(location, destination);
         int diff = abs(move.x()) - abs(move.y());
         if(diff != 1) return false;
-        return move.x() <= 2 && move.y() <= 2;
+        return abs(move.x()) <= 2 && abs(move.y()) <= 2;
     }
 
     @Override

@@ -36,6 +36,9 @@ public class Pawn extends AbstractPiece {
         return true;
     }
 
+    /**
+     * Makes an attempt to promote each time it moves.
+     */
     private void tryPromote() {
         gameBoard.onPromote(new PromotionEvent(this,
                 new Queen(this.boardID, this.location, this.side),

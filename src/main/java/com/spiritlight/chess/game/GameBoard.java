@@ -2,6 +2,7 @@ package com.spiritlight.chess.game;
 
 import com.spiritlight.chess.events.CaptureEvent;
 import com.spiritlight.chess.events.GameEvent;
+import com.spiritlight.chess.events.GameFinishEvent;
 import com.spiritlight.chess.events.PromotionEvent;
 import com.spiritlight.chess.pieces.AbstractPiece;
 import com.spiritlight.chess.pieces.King;
@@ -10,6 +11,7 @@ import com.spiritlight.chess.utils.Formatter;
 import com.spiritlight.chess.utils.Location;
 import com.spiritlight.chess.utils.PromotionRule;
 import com.spiritlight.chess.utils.Side;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,7 +51,8 @@ public final class GameBoard extends AbstractBoard {
     private boolean completed = false;
     private static final List<GameBoard> activeGameBoards = new ArrayList<>();
 
-    public static GameBoard getBoard(UUID id) {
+    @Contract(pure = true)
+    public static @Nullable GameBoard getBoard(UUID id) {
         for(GameBoard gameBoard : activeGameBoards) {
             if(gameBoard.id.equals(id)) return gameBoard;
         }
@@ -72,6 +75,11 @@ public final class GameBoard extends AbstractBoard {
         PromotionEvent.addListener(this);
     }
 
+    /**
+     * Retrieves the location(s) of a specified piece type
+     * @param piece The piece type to look for
+     * @return A possibly-empty list of locations of pieces.
+     */
     @NotNull
     public List<Location> getLocationOf(AbstractPiece piece) {
         List<Location> ret = new ArrayList<>();
@@ -83,52 +91,65 @@ public final class GameBoard extends AbstractBoard {
         return ret;
     }
 
-    public boolean movePiece(Side side, Location from, Location to) {
-        if(!hasPiece(from)) {
+    /**
+     * Moves the piece
+     * @param side The side to make a move
+     * @param source The source location
+     * @param destination The destination location
+     * @return Whether the move succeeded
+     */
+    @Override
+    public boolean movePiece(Side side, Location source, Location destination) {
+        if(!hasPiece(source)) {
             System.out.println("No piece");
             return false;
         }
-        AbstractPiece piece = getPiece(from);
-        if(!piece.canMove(to) || piece.getSide() != side) {
+        AbstractPiece piece = getPiece(source);
+        if(!piece.canMove(destination) || piece.getSide() != side) {
             System.out.println("Move illegal or wrong side");
             return false;
         }
-
-        boolean ret = piece.move(to); // Deferring return to fire updated event
-        if(!ret) return false;
-        this.updatePieces(from, to);
+        piece.move(destination); // Deferring return to fire updated event
+        this.updatePieces(source, destination);
         GameEvent.fire(new GameEvent(this, pieceMap));
         return true;
     }
 
+    @Override
     public boolean hasPiece(Location source) {
         return pieceMap.get(source) != null;
     }
 
-    @Nullable
+    @Override @Nullable
     public AbstractPiece getPiece(Location source) {
         return pieceMap.get(source);
     }
 
-
+    /**
+     * Updates the piece map by moving the pieces
+     * @param from The source tile
+     * @param to The destination tile
+     */
     private void updatePieces(Location from, Location to) {;
-        this.pieceMap.put(from, this.getPiece(from));
-        this.pieceMap.put(to, this.getPiece(to));
+        AbstractPiece deferredPiece = this.pieceMap.get(from);
+        this.pieceMap.put(from, null);
+        this.pieceMap.put(to, deferredPiece);
     }
 
     // Events
 
     @Override
-    public void onCapture(CaptureEvent event) {
+    public void onCapture(@NotNull CaptureEvent event) {
         if(!event.getBoardID().equals(this.id)) return;
         if(event.getPiece() instanceof King) {
+            GameFinishEvent.fire(new GameFinishEvent(this, pieceMap, event.getCapturingSide()));
             finish();
         }
         this.pieceMap.put(event.getLocation(), null);
     }
 
     @Override // If a pawn makes a move, it'll call this method each time.
-    public void onPromote(PromotionEvent event) {
+    public void onPromote(@NotNull PromotionEvent event) {
         if(!event.getBoardID().equals(this.id)) return;
         if(!(event.getPiece() instanceof Pawn pawn)) return;
         // Check for promotion rule for validity of promotion
@@ -193,6 +214,7 @@ public final class GameBoard extends AbstractBoard {
         return completed;
     }
 
+    @Override
     public boolean isOutside(Location location) {
         return location.x() < 0 || location.x() >= x || location.y() < 0 || location.y() >= y;
     }
@@ -205,6 +227,10 @@ public final class GameBoard extends AbstractBoard {
         return y;
     }
 
+    /**
+     * Returns a String representation of how the current board looks like
+     * @return A text view of this board
+     */
     public String getBoardView() {
         StringBuilder ret = new StringBuilder("╔");
         for(int i = 0; i <= x; i++) {
@@ -245,6 +271,11 @@ public final class GameBoard extends AbstractBoard {
         return Collections.unmodifiableMap(pieceMap);
     }
 
+    /**
+     * Returns a String representation of how the current board looks like
+     * @param formatter The formatter to format this string
+     * @return A text view of this board
+     */
     public String getBoardView(Formatter formatter) {
         return formatter.format(this.getBoardView());
     }

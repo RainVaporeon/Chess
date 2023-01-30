@@ -59,7 +59,7 @@ public abstract class AbstractPiece {
     public boolean move(Location destination) {
         if(!canMove(destination)) return false;
         if(gameBoard.hasPiece(destination) && gameBoard.getPiece(destination).side != this.side) {
-            CaptureEvent.fire(new CaptureEvent(gameBoard.getPiece(destination), destination, boardID));
+            CaptureEvent.fire(new CaptureEvent(gameBoard.getPiece(destination), this, destination, boardID));
         }
         initialMove = false;
         return true;

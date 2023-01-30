@@ -2,6 +2,7 @@ package com.spiritlight.chess.events;
 
 import com.spiritlight.chess.pieces.AbstractPiece;
 import com.spiritlight.chess.utils.Location;
+import com.spiritlight.chess.utils.Side;
 
 import java.util.List;
 import java.util.UUID;
@@ -9,6 +10,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CaptureEvent extends Event {
     private final AbstractPiece piece;
+    private final AbstractPiece capturingPiece;
+    private final Side capturingSide;
     private final Location location;
     private final UUID boardID;
 
@@ -18,12 +21,17 @@ public class CaptureEvent extends Event {
      * @param location The location of the piece
      * @param boardID The board ID
      */
-    public CaptureEvent(AbstractPiece piece, Location location, UUID boardID) {
+    public CaptureEvent(AbstractPiece piece, AbstractPiece capturingPiece, Location location, UUID boardID) {
         this.location = location;
+        this.capturingPiece = capturingPiece;
         this.piece = piece;
         this.boardID = boardID;
+        this.capturingSide = capturingPiece.getSide();
     }
 
+    /**
+     * Gets the captured piece
+     */
     public AbstractPiece getPiece() {
         return piece;
     }
@@ -34,6 +42,14 @@ public class CaptureEvent extends Event {
 
     public UUID getBoardID() {
         return boardID;
+    }
+
+    public Side getCapturingSide() {
+        return capturingSide;
+    }
+
+    public AbstractPiece getCapturingPiece() {
+        return capturingPiece;
     }
 
     public interface Listener {

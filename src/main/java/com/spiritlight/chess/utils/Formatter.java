@@ -2,6 +2,8 @@ package com.spiritlight.chess.utils;
 
 import com.spiritlight.chess.game.GameBoard;
 
+import java.util.regex.Pattern;
+
 /**
  * A simple formatter that, when supplied a string,
  * outputs a formatted string.
@@ -17,5 +19,9 @@ public interface Formatter {
      */
     static Formatter getDefaultFormatting() {
         return input -> input;
+    }
+
+    static Formatter getBorderlessFormatting() {
+        return input -> input.replaceAll("[╔═╗╮╤║│╚╧╝╰┈╯\\w]", "");
     }
 }

@@ -10,12 +10,12 @@ public abstract class AbstractBoard implements CaptureEvent.Listener, PromotionE
     /**
      * Moves a piece from a location to another
      * @param side The side to make a move
-     * @param from The source location
-     * @param to The destination location
+     * @param source The source location
+     * @param destination The destination location
      * @return {@code true} if the move was allowed and if there is a valid
      * piece on the location, {@code false} otherwise
      */
-    protected abstract boolean movePiece(Side side, Location from, Location to);
+    protected abstract boolean movePiece(Side side, Location source, Location destination);
 
     public abstract AbstractPiece getPiece(Location source);
 
