@@ -24,6 +24,12 @@ public class Rook extends AbstractPiece {
         return side == Side.WHITE ? "♖" : "♜";
     }
 
+    // TODO implement this
+    @Override
+    protected boolean isBlocked(Vector vector) {
+        return false;
+    }
+
     @Override
     public String toString() {
         return "Rook" + super.toString();

@@ -5,6 +5,7 @@ import com.spiritlight.chess.game.AbstractBoard;
 import com.spiritlight.chess.game.GameBoard;
 import com.spiritlight.chess.utils.Location;
 import com.spiritlight.chess.utils.Side;
+import com.spiritlight.chess.utils.Vector;
 
 import java.util.UUID;
 
@@ -37,6 +38,19 @@ public abstract class AbstractPiece {
      * Gets the corresponding character to this piece
      */
     public abstract String character();
+
+    /**
+     * Checks whether the piece is blocked by anything from
+     * a given vector
+     * @param vector The vector indicating path of this piece movement
+     * @return {@code true} if any piece is in the way,
+     * {@code false} if no pieces are in its way, or the blocking piece is on the destination
+     */
+    protected abstract boolean isBlocked(Vector vector);
+
+    protected boolean isBlocked(Location location) {
+        return isBlocked(Vector.of(this.location, location));
+    }
 
     public boolean canCapture(AbstractPiece piece) {
         return piece.allowCapture(this);

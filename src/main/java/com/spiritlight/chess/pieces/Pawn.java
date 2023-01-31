@@ -52,6 +52,11 @@ public class Pawn extends AbstractPiece {
     }
 
     @Override
+    protected boolean isBlocked(Vector vector) {
+        return !vector.isDiagonal() && gameBoard.hasPiece(location.apply(vector));
+    }
+
+    @Override
     public String toString() {
         return "Pawn" + super.toString();
     }

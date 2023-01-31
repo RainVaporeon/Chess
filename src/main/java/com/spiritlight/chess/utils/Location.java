@@ -1,6 +1,9 @@
 package com.spiritlight.chess.utils;
 
-public class Location extends Coordinates {
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
+public final class Location extends Coordinates {
 
     public Location(int x, int y) {
         super(x, y);
@@ -36,16 +39,37 @@ public class Location extends Coordinates {
         }
     }
 
-    public static Location of(int x, int y) {
+    @Contract("_, _ -> new")
+    public static @NotNull Location of(int x, int y) {
         return new Location(x, y);
     }
 
-    public static Location of(char x, int y) {
+    @Contract("_, _ -> new")
+    public static @NotNull Location of(char x, int y) {
         return new Location(x, y);
     }
 
-    public static Location of(char x, char y) {
+    @Contract("_, _ -> new")
+    public static @NotNull Location of(char x, char y) {
         return new Location(x, y);
+    }
+
+    @Contract("_, _ -> new")
+    public static @NotNull Location of(@NotNull Location source, @NotNull Vector vector) {
+        return new Location(source.x() + vector.x(), source.y() + vector.y());
+    }
+
+    /**
+     * Applies a given vector to this object
+     * @param vector The vector to apply in
+     * @return A new Location object after applying this vector
+     */
+    @Contract("_ -> new")
+    public Location apply(Vector vector) {
+        if(vector == null) {
+            throw new NullPointerException("vector is null");
+        }
+        return of(this, vector);
     }
 
     public int x() {

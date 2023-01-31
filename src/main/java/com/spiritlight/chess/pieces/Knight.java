@@ -27,6 +27,11 @@ public class Knight extends AbstractPiece {
     }
 
     @Override
+    protected boolean isBlocked(Vector vector) {
+        return gameBoard.hasPiece(location.apply(vector)) && gameBoard.getPiece(location.apply(vector)).getSide() == this.side;
+    }
+
+    @Override
     public String toString() {
         return "Knight" + super.toString();
     }
